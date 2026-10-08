@@ -3,6 +3,8 @@ import './App.css'
 import axios from 'axios'
 function App() {
 
+  const BASE_URL = 'http://127.0.0.1:8000'
+
   const [students, setStudents] = useState([])
   const [id, setId] = useState('')
   const [name, setName] = useState('')
@@ -10,7 +12,7 @@ function App() {
   const [isEdit, setIsEdit] = useState(false)
 
   async function getAllStudents() {
-    const response = await axios.get('http://127.0.0.1:8000/students')
+    const response = await axios.get(`${BASE_URL}/students`)
     setStudents(response.data)
   }
 
@@ -30,14 +32,14 @@ function App() {
 
   async function sendData() {
     if(isEdit === false) {
-      const response = await axios.post('http://127.0.0.1:8000/students', {
+      const response = await axios.post(`${BASE_URL}/students`, {
         id: id,
         name: name,
         course: course
       })
       window.alert(response.data.detail)
     } else {
-      const response = await axios.put(`http://127.0.0.1:8000/students/${id}`, {
+      const response = await axios.put(`${BASE_URL}/students/${id}`, {
         id: id,
         name: name,
         course: course
@@ -51,6 +53,12 @@ function App() {
     setName(student.name)
     setCourse(student.course)
     setIsEdit(true)
+  }
+
+  async function deleteRecord(id) {
+    const response = await axios.delete(`${BASE_URL}/students/${id}`)
+    getAllStudents()
+    window.alert(response.data.detail)
   }
 
   return(
@@ -80,7 +88,7 @@ function App() {
                 <td>{student.name}</td>
                 <td>{student.course}</td>
                 <td><button className='edit-btn' onClick={() => {edit(student)}}>Edit</button></td>
-                <td><button className='delete-btn'>Delete</button></td>
+                <td><button className='delete-btn' onClick={() => {deleteRecord(student.id)}}>Delete</button></td>
               </tr>
             )
           }) }
